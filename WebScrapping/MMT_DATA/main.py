@@ -1,5 +1,8 @@
+# ------------------------------------------------------ Imports -------------------------------------------------------
+
 import os
 import time
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -7,8 +10,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from utils.shortDay import Day_converter
 from utils.ShortMonth import Month_convert
+# ----------------------------------------------------------------------------------------------------------------------
 
-# ---------------------------------------- Initial setup of driver ---------------------------------------------
+
+# ---------------------------------------- Initial setup of driver -----------------------------------------------------
 options = Options()
 options.add_experimental_option("detach", True)
 
@@ -18,20 +23,20 @@ DRIVER = webdriver.Chrome(options=options)
 
 DRIVER.get('https://www.makemytrip.com/')
 DRIVER.maximize_window()
-# --------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 
-# ---------------------------------------------- Information ---------------------------------------------------
+# ---------------------------------------------- Information -----------------------------------------------------------
 from_city = 'Mumbai'
 destination_city = 'Bengaluru'
 Date = 29
 Month = 'June'
 day = Day_converter('Saturday')
 Year = 2024
-# --------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 
-# ---------------------------------------- Removing Dialogue Boxes ---------------------------------------------
+# ---------------------------------------- Removing Dialogue Boxes -----------------------------------------------------
 action = ActionChains(DRIVER)
 action.move_by_offset(20, 190).click().perform()
 
@@ -41,10 +46,10 @@ action = ActionChains(DRIVER)
 action.move_by_offset(20, 190).click().perform()
 
 time.sleep(2)
-# --------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 
-# ---------------------------------------- Setting the search box ----------------------------------------------
+# ---------------------------------------- Setting the search box ------------------------------------------------------
 one_way_trip_selection = DRIVER.find_element('xpath', '//li[contains(@data-cy, "oneWayTrip")]')
 one_way_trip_selection.click()
 
@@ -69,10 +74,10 @@ time.sleep(2)
 
 destination_city_location = DRIVER.find_element('xpath', f'//div/p/span/span[contains(text(), "{destination_city}")]')
 destination_city_location.click()
-# ------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 
-# ------------------------------------------------ Dates Input Box ----------------------------------------------
+# ------------------------------------------------ Dates Input Box -----------------------------------------------------
 time.sleep(2)
 
 present_month_in_the_box = DRIVER.find_element('xpath', '//div[contains(@class, "DayPicker-Caption")]/div')
@@ -91,7 +96,12 @@ time.sleep(2)
 
 dates_block_click = DRIVER.find_element('xpath', f'//div[contains(@class,"DayPicker-Day") and contains(@aria-label, "{day} {month} {Date} {Year}")]')
 dates_block_click.click()
+# -----------------------------------------------------------------------------------------------------------------
 
 
+# --------------------------------------------- clicking Search Box ----------------------------------------------------
+search_box_click = DRIVER.find_element('xpath', f'//a[contains(@class, "widgetSearchBtn") and contains(text(), "Search")]')
+search_box_click.click()
+# ----------------------------------------------------------------------------------------------------------------------
 
 print("Pura code run hogaya bhai.")
