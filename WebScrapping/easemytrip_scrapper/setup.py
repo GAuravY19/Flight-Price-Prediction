@@ -13,18 +13,39 @@ from utils.Month_to_num import Month_converter_Num
 
 
 class OneWayScrapper:
+    """
+        This class contains all the methods required for scrapping OneWay data from EaseMyTrip.com
 
-    def __init__(self):
+    """
+    def __init__(self,from_city:str, dest_city:str, date:int, month:str, year:int):
+        """
+            Here constants stuffs for the class are initialized.
+
+            Args:
+                from_city (str): The departure city or airport code from where the flights will originate.
+                dest_city (str): The destination city or airport code where the flights will arrive.
+                date (int): The day of the month for which the flight data is being scraped (e.g., 1 for the 1st, 15 for the 15th).
+                month (str): The month for which the flight data is being scraped (e.g., 1 for January, 12 for December).
+                year (int): The year for which the flight data is being scraped.
+        """
+
         self.options = Options()
         self.options.add_experimental_option("detach", True)
 
         os.environ['PATH'] = 'D:/FlightsPricePrediction/WebScrapping/Webdriver/chromedriver.exe'
 
         self.DRIVER = webdriver.Edge(options=self.options)
-
         self.DRIVER.get("https://www.easemytrip.com/?msclkid=47862d64810f1926f8a24b4b9588c936")
-
         self.DRIVER.maximize_window()
+
+        self.from_city = from_city
+        self.dest_city = dest_city
+
+        self.month_num = Month_converter_Num(month)
+        self.date = date
+        self.month = Month_convert(month)
+        self.month = self.month.upper()
+        self.year = year
 
         self.COMPANY_NAME = []
         self.DEPARTURE_TIME = []
@@ -33,37 +54,26 @@ class OneWayScrapper:
         self.NON_STOP_OR_NOT = []
         self.PRICE = []
 
-        self.save_location_file = 'D:/FlightsPricePrediction/data/raw_data/Dateformat.csv'
-
-
-    def initializer(self,from_city:str,
-                    dest_city:str,
-                    date:int,
-                    month:str,
-                    year) -> None:
-
-        self.from_city = from_city
-
-        self.dest_city = dest_city
-
-        self.month_num = Month_converter_Num(month)
-
-        self.date = date
-
-        self.month = Month_convert(month)
-        self.month = self.month.upper()
-
-        self.year = 2024
+        self.save_location_file = 'D:/FlightsPricePrediction/data/raw_data'
 
 
     def trip_type_selection(self, one_way:bool) -> None:
+        """
+        This method selects the Trip type for data collection.
+
+        Args:
+            one_way (bool): If True, it will collect One way trips only, Else it will select RoundTrip.
+        """
 
         if one_way:
             trip_type_selector = self.DRIVER.find_element('xpath', '//li[contains(@class, "activecl trip_type flig-show click-one") and contains(@id, "oway")]')
             trip_type_selector.click()
 
 
-    def From_info_enter(self):
+    def From_info_enter(self) -> None:
+        """
+            This method Enter the From city information in the webpage.
+        """
         from_box = self.DRIVER.find_element('xpath', "//p[text() = ' From']")
         from_box.click()
 
@@ -78,7 +88,10 @@ class OneWayScrapper:
         from_city_selection.click()
 
 
-    def To_city_enter(self):
+    def To_city_enter(self) -> None:
+        """
+            This method enter the details of destination city.
+        """
         time.sleep(2)
 
         dest_city_enter = self.DRIVER.find_element('xpath', '//div[contains(@class, "searcityCol")]//input[contains(@placeholder, "To")]')
@@ -92,7 +105,10 @@ class OneWayScrapper:
         time.sleep(2)
 
 
-    def travel_Date_input(self):
+    def travel_Date_input(self) -> None:
+        """
+            This method enter the travel date details.
+        """
         travel_calendar_selection = self.DRIVER.find_element('xpath', f'//div[contains(@class, "month2")]')
         present_month = travel_calendar_selection.text.split(" ")[0]
 
@@ -107,12 +123,18 @@ class OneWayScrapper:
         travel_date.click()
 
 
-    def click_search(self):
+    def click_search(self) -> None:
+        """
+            This method click the search button.
+        """
         search_box = self.DRIVER.find_element('xpath', '//button[contains(@class, "srchBtnSe")]')
         search_box.click()
 
 
-    def collecting_data(self):
+    def collecting_data(self) -> None:
+        """
+            This method Collects the data for the flights.
+        """
 
         time.sleep(7)
 
@@ -167,8 +189,17 @@ class OneWayScrapper:
                                             'Price'])
 
 
-    def saving_data(self):
-        self.df1.to_csv(self.save_location_file)
+    def saving_data(self, filename:str) -> None:
+        """
+            This method saves the dataframe and quits the driver.
+
+            Args:
+                filename (str): The name of file with which it will be saved.
+        """
+        self.df1.to_csv(os.path.join(self.save_location_file, filename), index=False)
+
+        # closing the driver
+        self.DRIVER.quit()
 
 
 
